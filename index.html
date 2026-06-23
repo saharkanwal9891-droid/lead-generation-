@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sahar | LinkedIn Specialist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --brand-main: #Ae1844;
+            --brand-secondary: #Db4070;
+            --brand-accent: #Ae1e22;
+        }
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .text-brand { color: var(--brand-main); }
+        .bg-brand { background-color: var(--brand-main); }
+        .border-brand { border-color: var(--brand-main); }
+        .sidebar-item:hover { background-color: #fdf2f5; }
+    </style>
+</head>
+<body class="bg-gray-50 h-screen flex flex-col text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+        <div class="text-2xl font-bold tracking-tighter" style="color: var(--brand-main);">SAHAR</div>
+        <div class="flex items-center gap-3">
+            <input type="password" id="apiKey" placeholder="Enter Gemini API Key" class="border rounded-lg px-4 py-2 w-64 text-sm focus:outline-none focus:border-brand">
+            <div id="statusIndicator" class="w-4 h-4 rounded-full bg-red-500"></div>
+            <button onclick="validateKey()" class="bg-brand text-white px-4 py-2 rounded-lg text-sm font-medium">Connect</button>
+        </div>
+    </header>
+
+    <main class="flex-1 flex overflow-hidden">
+        <!-- Left Sidebar -->
+        <aside class="w-64 border-r border-gray-200 bg-white p-6 overflow-y-auto">
+            <h2 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Documents</h2>
+            <input type="file" id="fileInput" multiple accept=".pdf" class="hidden">
+            <button onclick="document.getElementById('fileInput').click()" class="w-full border-2 border-dashed border-gray-300 rounded-lg py-4 text-sm text-gray-500 hover:border-brand hover:text-brand transition">
+                + Upload Profiles
+            </button>
+            <div id="fileList" class="mt-6 space-y-2"></div>
+        </aside>
+
+        <!-- Center Panel -->
+        <section class="flex-1 bg-gray-100 flex items-center justify-center p-8 overflow-hidden">
+            <div id="pdfViewer" class="w-full h-full bg-white shadow-sm border border-gray-200 rounded-lg flex items-center justify-center text-gray-400">
+                Upload a document to begin viewing
+            </div>
+        </section>
+
+        <!-- Right Sidebar (Chat) -->
+        <aside class="w-80 border-l border-gray-200 bg-white flex flex-col">
+            <div id="chatBox" class="flex-1 p-6 overflow-y-auto space-y-4">
+                <div class="bg-gray-100 p-3 rounded-lg text-sm text-gray-700">
+                    Hello! I'm Sahar. Upload your LinkedIn profile and let's optimize it for growth.
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-200">
+                <input type="text" id="userInput" placeholder="Ask about LinkedIn tips..." class="w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-brand">
+            </div>
+        </aside>
+    </main>
+
+    <script>
+        let files = [];
+        let connected = false;
+
+        async function validateKey() {
+            const key = document.getElementById('apiKey').value;
+            if (key.length > 10) {
+                document.getElementById('statusIndicator').classList.replace('bg-red-500', 'bg-green-500');
+                connected = true;
+            } else {
+                alert("Please enter a valid API key.");
+            }
+        }
+
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            const list = document.getElementById('fileList');
+            Array.from(e.target.files).forEach(f => {
+                files.push(f);
+                const div = document.createElement('div');
+                div.className = "sidebar-item p-2 rounded text-sm cursor-pointer border-b";
+                div.textContent = f.name;
+                div.onclick = () => document.getElementById('pdfViewer').textContent = `Viewing: ${f.name}`;
+                list.appendChild(div);
+            });
+        });
+
+        document.getElementById('userInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && connected) {
+                const msg = e.target.value;
+                const chat = document.getElementById('chatBox');
+                chat.innerHTML += `<div class="bg-brand text-white p-3 rounded-lg text-sm self-end">${msg}</div>`;
+                e.target.value = '';
+                // Logic to call Gemini API would go here
+            }
+        });
+    </script>
+</body>
+</html>
